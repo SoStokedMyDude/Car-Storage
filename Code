@@ -1,0 +1,166 @@
+import csv
+
+
+class Car:
+    def __init__(self, id, reg, make, model, sipp, seats, width, length, speed, mpg, in_garage=True):
+        self.id = id
+        self.reg = reg
+        self.make = make
+        self.model = model
+        self.sipp = sipp
+        self.seats = seats
+        self.width = width
+        self.length = length
+        self.speed = speed
+        self.mpg = mpg
+        self.in_garage = in_garage
+
+    def __str__(self):
+        return f"ID: {self.id}, Registration: {self.reg}, Make: {self.make}, Model: {self.model}, SIPP: {self.sipp}, Seats: {self.seats}, Width: {self.width}, Length: {self.length}, Speed: {self.speed}, MPG: {self.mpg}, In Garage: {'Yes' if self.in_garage else 'No'}"
+
+
+class CarRegistry:
+    def __init__(self):
+        self.cars = []
+
+    def add_car(self, car):
+        self.cars.append(car)
+
+    def remove_car(self, car):
+        self.cars.remove(car)
+
+    def display_cars(self):
+        if not self.cars:
+            print("No cars in the registry.")
+            return
+        print("Cars in the registry:")
+        for car in self.cars:
+            print(car)
+
+    def save_to_file(self, filename):
+        with open(filename, 'w', newline='') as file:
+            writer = csv.writer(file)
+            for car in self.cars:
+                writer.writerow(
+                    [car.id, car.reg, car.make, car.model, car.sipp, car.seats, car.width, car.length, car.speed,
+                     car.mpg, car.in_garage])
+
+    def load_from_file(self, filename):
+        try:
+            with open(filename, 'r') as file:
+                reader = csv.reader(file)
+                for row_num, row in enumerate(reader, start=1):
+                    if len(row) == 11:
+                        id, reg, make, model, sipp, seats, width, length, speed, mpg, in_garage = row
+                        self.add_car(
+                            Car(id, reg, make, model, sipp, seats, width, length, speed, mpg, in_garage == 'True'))
+                    else:
+                        print(f"Warning: Skipping row {row_num} with unexpected number of values:", row)
+        except FileNotFoundError:
+            print("No existing registry found. Starting with an empty registry.")
+
+
+def main():
+    registry = CarRegistry()
+    registry.load_from_file(r'C:\Users\sherr\PycharmProjects\Software dev\CarRegistry.dat')
+
+    while True:
+        print("\nMenu:")
+        print("1. Add a new car")
+        print("2. Remove a car")
+        print("3. Display all cars")
+        print("4. Update car status")
+        print("5. Save and exit")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            id = input("Enter the id of the car: ").capitalize()
+            if id == 'Q':
+                break
+            reg = input("Enter the registration of the car: ").capitalize()
+            if reg == 'Q':
+                break
+            make = input("Enter the make of the car: ").capitalize()
+            if make == 'Q':
+                break
+            model = input("Enter the model of the car: ").capitalize()
+            if model == 'Q':
+                break
+            sipp = input("Enter the sipp of the car: ").capitalize()
+            if sipp == 'Q':
+                break
+            while True:
+                seats = input("Enter the number of seats (1 to 10): ").capitalize()
+                if seats == 'Q':
+                    break
+                try:
+                    seats = int(seats)
+                    if 1 <= seats <= 10:
+                        break
+                    else:
+                        print("Number of seats must be between 1 and 10. Please try again.")
+                except ValueError:
+                    print("Invalid input. Please enter a valid number of seats.")
+            while True:
+                width = input("Enter the width of the car (1000 to 2500): ").capitalize()
+                if width == 'Q':
+                    break
+                try:
+                    width = int(width)
+                    if 1000 <= width <= 2500:
+                        break
+                    else:
+                        print("Number of width must be between 1000 and 2500. Please try again.")
+                except ValueError:
+                    print("Invalid input. Please enter a valid width.")
+            while True:
+                length = input("Enter the length of the car (1000 to 9999): ").capitalize()
+                if length == 'Q':
+                    break
+                try:
+                    length = int(length)
+                    if 1000 <= length <= 9999:
+                        break
+                    else:
+                        print("Number of length must be between 1000 and 9999. Please try again.")
+                except ValueError:
+                    print("Invalid input. Please enter a valid length.")
+            speed = input("Enter the top speed of the car: ").capitalize()
+            if speed == 'Q':
+                break
+            mpg = input("Enter the miles per gallon of the car: ").capitalize()
+            if mpg == 'Q':
+                break
+            registry.add_car(Car(id, reg, make, model, sipp, seats, width, length, speed, mpg))
+        elif choice == '2':
+            registry.display_cars()
+            index = int(input("Enter the index of the car to remove: ")) - 1
+            if 0 <= index < len(registry.cars):
+                registry.remove_car(registry.cars[index])
+            else:
+                print("Invalid index. Please try again.")
+        elif choice == '3':
+            registry.display_cars()
+        elif choice == '4':
+            registry.display_cars()
+            index = int(input("Enter the index of the car to update: ")) - 1
+            if 0 <= index < len(registry.cars):
+                registry.cars[index].in_garage = not registry.cars[index].in_garage
+            else:
+                print("Invalid index. Please try again.")
+        elif choice == '5':
+            try:
+                registry.save_to_file(r'C:\Users\sherr\PycharmProjects\Software dev\CarRegistry.dat')
+                print("Registry saved. Exiting...")
+                break
+            except Exception as e:
+                print(f"Error saving registry: {e}")
+        else:
+            print("Invalid choice. Please try again.")
+
+        if __name__ == "__main__":
+            main()
+
+
+if __name__ == "__main__":
+    main()
